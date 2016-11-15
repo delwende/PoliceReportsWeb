@@ -1,0 +1,151 @@
+{{extend 'generate_report_layout.html'}}
+<div class="container">
+<!-- Cover  -->
+
+<div class="panel panel-default">
+  <div class="panel-body">
+    <center>
+    <img class="text-center" src="{{=URL('static','images/logo_policia.png')}}"/>
+    </center>
+    <h1 class="text-center">Policía de Tucumán</h1>
+    <h2 class="text-center">Denuncia Online<br><small>
+    Pasaje Bascary nro 2834 Capital, Tel 0381-4518895  Fax nro 03814334561
+    </small></h2>
+  </div>
+</div>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <p class="lead text-center"><strong>CAUSA: {{=report['perpetrator'] + ' S/ ' + report['crime_type']}} VICTIMA: {{=citizen['name'] + ' ' + citizen['last_name']}}</strong></p>
+  </div>
+</div>
+</div>
+<!-- Cover  -->
+<!-- Report  -->
+<div class="container">
+    <h3>ACTA DE PRESENTACIÓN POR DENUNCIA:</h3>
+    <p>
+    En la Ciudad de San Miguel de Tucumán, Departamento Capital de la Provincia
+    de Tucumán  República Argentina,  a los … días del mes de …. del  Año Dos
+    Mil Diez, siendo horas  … y … minutos, el funcionario de Policía que
+    suscribe <strong> {{=officer['first_name'] + ' ' + officer['last_name'] + '  ' +
+        officer['grade']}}, {{=officer['dependency']}}, con funciones
+        de {{=officer['role']}}, </strong> secundado
+    en este acto por el <strong>{{=officer['seconded_by']}}</strong>, labro la
+    presente a los fines y efectos legales de dejar debidamente documentado lo
+    siguiente:
+    </p>
+    <p>
+    Que en la fecha y hora de mención comparece por ante esta Unidad Especial
+    una persona, quien desea radicar formal denuncia  verbal, ante ello se
+    procede a hacerle conocer las normativas vigentes en cuanto a la Denuncia
+    estipuladas en el capítulo III, Título I del Libro Segundo Código Procesal
+    de la Provincia, a saber:
+    </p>
+    <p>
+    <br>
+    <br>
+    <strong>Art. 323.- FACULTAD DE DENUNCIAR</strong>. Toda persona que tenga noticia de un
+    delito cuya represión sea perseguible de oficio podrá denunciarlo al fiscal
+    de Instrucción o a la Policía. Cuando la acción penal dependa de instancia
+    privada, sólo podrá denunciar quien tenga facultad para instar (Artículo
+    6).
+    <br>
+    <br>
+    <strong>Art. 324.- FORMA</strong>. La denuncia podrá presentarse en forma escrita o
+    verbal, personalmente o por mandatarios especiales. En el último caso,
+    deberá acompañarse el poder. La denuncia escrita será firmada ante el
+    funcionario que la reciba. Cuando sea verbal, se extenderá un acta de
+    acuerdo con el capítulo II, título VI del libro primero. En ambos casos, el
+    funcionario comprobará y hará constar la identidad del denunciante.
+    <br>
+    <br>
+    <strong>Art. 325.- CONTENIDO</strong>. La denuncia deberá contener, en cuanto sea posible, la
+    relación circunstanciada del hecho, con indicación de sus partícipes,
+    damnificados, testigos y demás elementos que puedan conducir a su
+    comprobación y calificación legal. Cuando la denuncia sea formulada por el
+    titular de la acción civil, podrá contener también la manifestación
+    prevista en el inciso 1. del Artículo 25.
+    <br>
+    <br>
+    <strong>Art. 326.- OBLIGACIÓN DE DENUNCIAR. EXCEPCIÓN.</strong> Tendrán obligación de denunciar los delitos
+    perseguibles de oficio: 1. Los funcionarios o empleados públicos que los
+    conozcan en el ejercicio de sus funciones. 2. Los médicos, parteras,
+    farmacéuticos y demás personas que ejerzan cualquier ramo del arte de curar
+    que conozcan esos hechos al prestar los auxilios de su profesión, salvo que
+    el conocimiento adquirido por ellos esté por la ley bajo el amparo del
+    secreto profesional. 3. Los médicos, psicólogos, odontólogos y demás
+    profesionales o personal de la salud o de la educación, cuando tengan
+    motivos para creer que un menor de dieciocho (18) años ha sufrido abuso
+    físico o mental o malos tratos. En este caso, se aplicará también lo
+    dispuesto por la Ley N° 6518 -Denuncia de actos de violencia contra menores
+    de edad-.
+    <br>
+    <br>
+    <strong>Art. 327.- RESPONSABILIDAD DEL DENUNCIANTE.</strong> El denunciante no
+    será parte del proceso ni incurrirá en responsabilidad alguna, excepto los
+    casos de falsedad o calumnia.
+    <br>
+    <br>
+    <strong>Art. 329.-  DENUNCIA ANTE LA POLICÍA.</strong> Cuando la denuncia fuese presentada ante la Policía, ésta actuará con arreglo a
+    los Artículos 333 y 335.Como así también se le hace conocer las penas  con
+    las que la ley castiga la Falsa Denuncia  estipulada en Art. 245 del Código
+    Penal  que dice: Se impondrá prisión  de dos meses a un año,  o multa, a
+    quien denunciare  falsamente un delito ante la autoridad. Enterado, se le
+    exigió juramento por sus creencias religiosas, ideológicas o promesa de
+    decir verdad de cuanto  supiera o le fuera preguntado, respondiendo: LO
+    JURO. ( Art.132 CPPT) Seguidamente fue interrogado al tenor del Art 229– 2º
+    Párrafo del C.P.P.T., y se identifica, como:<br>
+    <strong> {{=citizen['name']+'  '+ citizen['last_name']+', '+
+    citizen['nationality']+ ', '+ citizen['marital_status']+', de '+
+    str(citizen['birth_date'])}} años de edad, instruido, de profesión
+    {{=citizen['occupation']}}, DNI nro {{=citizen['ssn']}}.,  fecha de
+    nacimiento {{=str(citizen['birth_date'])}}, hijo de
+    {{=citizen['father_name']}} (madre) y de {{=citizen['mother_name']}} (padre), con
+    domicilio en {{=citizen['address']}}, teléfono: {{=citizen['phone']}}
+    </strong>. Preguntado para que diga si
+    conoce a la persona acerca de la cual contrapone denuncia y a la víctima
+    del delito y si se encuentra comprendida, con relación a ellas, entre las
+    personas que mencionan los ART. 222 y 223 del C.P.P.T. (Art. 222
+    prohibición. Facultad de abstención. No podrán testificar en contra del
+    imputado, bajo pena de nulidad , su cónyuge, ascendientes, descendientes o
+    hermano, a menos que el delito aparezca ejecutado en perjuicio del testigo
+    o de un pariente suyo de grado igual o más próximo al que lo liga con el
+    imputado. Podrán abstenerse de testificar en contra del imputado sus
+    parientes colaterales hasta el cuarto grado de consanguinidad o segundo de
+    afinidad, sus tutores y pupilos a menos que el testigo fuere pariente suyo
+    de grado igual o más próximo al que lo liga con el imputado.
+    <br>
+    <br>
+    <strong>Art. 223 –</strong>
+    Deber de abstención. Deberán abstenerse de declarar sobre los hechos
+    secretos que hubieren llegado a su conocimiento en razón del propio estado,
+    oficio o profesión, bajo pena de nulidad: los ministros de un culto
+    admitido, los abogados, procuradores y escribanos, los médicos,
+    farmacéuticos, parteras y demás auxiliares del arte de  curar, los
+    militares y funcionarios políticos sobre secretos de Estado. Sin embargo,
+    estas personas no podrán negar el testimonio cuando sean liberadas por el
+    interesado del deber de guardar secreto, con excepción de las mencionadas
+    en primer término. Podrán abstenerse de declarar las personas mencionadas
+    en el Art. 2do. De la Ley Nacional nro. 12.908 (Estatuto del Periodista
+    Profesional) sobre las informaciones y sus fuentes de las que tomen
+    conocimiento con motivo o en ocasión del ejercicio  de su profesión,
+    cualquiera sea su naturaleza. El citado a testimoniar no podrá oponer el
+    secreto profesional cuando la fuente de su información la relevara
+    expresamente del mismo. Si el testigo invocare erróneamente ese deber con
+    respecto a un hecho y/o a la forma en que llegó a su conocimiento, y cuando
+    no esté comprendido en el concepto de deber el juez procederá, sin más a
+    interrogarlo), normas que le son leídas y explicadas  en este acto,
+    RESPONDE: que… pero no posee impedimento alguno para denunciar, y expone lo
+    siguiente:
+    </p>
+    <br>
+    <br>
+    <p>
+    Que lo narrado es todo cuanto  tengo a manifestar al respecto, por lo que
+    no siendo  para más el presente acto,  se da por finalizado el mismo,
+    previa lectura y ratificación de todo su contenido, firma  para constancia
+    por ante mi lo que CERTIFICO.
+    </p>
+    <!-- Report  -->
+
+</div>

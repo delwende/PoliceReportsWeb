@@ -1,0 +1,11 @@
+{{extend 'layout.html'}}
+<script src="{{=URL('static','js/moment.min.js')}}"></script>
+<script src="{{=URL('static','js/moment-with-locales.min.js')}}"></script>
+
+{{=form}}
+
+<script>
+$(document).ready(function(){
+$("#police_reports_incident_date__row p").text(moment($("#police_reports_incident_date__row p").text()).locale("es").format("D MMMM YYYY, h:mm"))
+})
+</script>

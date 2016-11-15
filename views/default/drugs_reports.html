@@ -1,0 +1,109 @@
+{{extend 'layout.html'}}
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyABzaXjXfo2StML3l6upa6-KU4tCOTxh20" type="text/javascript"></script>
+<script src="{{=URL('static','js/gmaps.min.js')}}"></script>
+<script src="{{=URL('static','js/moment.min.js')}}"></script>
+<script src="{{=URL('static','js/moment-with-locales.min.js')}}"></script>
+<link rel="stylesheet" href="{{=URL('static','css/custom.css')}}"/>
+<div class="row">
+  <div class="col-md-8">
+    <div id="map" style="height:600px;width:100%;"></div>
+  </div>
+  <div class="col-md-4" id="right">
+</div>
+
+
+
+<div class="panel panel-info" id="panel-template">
+  <!-- Default panel contents -->
+    <div class="panel-heading">Address</div>
+    <div class="panel-body">
+    <div class="media">
+    <div class="media-body">
+        <h4 class="media-heading">Date</h4>
+        <p id="incident_description">Description</p>
+    </div>
+    <div class="media-right">
+        <a href="#">
+            <img class="media-object img-thumbnail" src="" width="140px"
+            height="140px">
+        </a>
+    </div>
+    </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function(){
+    $("#panel-template").hide()
+})
+var map = new GMaps({
+    div: '#map',
+    lat: -26.8093,
+    lng: -65.2202,
+    zoom: 12,
+})
+
+$.ajax({
+    type:'GET',
+    url: '/minsegbe/endpoint/call/json/drugs_reports',
+    contentType: "application/json; charset=utf-8;",
+    dataType:'json',
+    success: function(e){
+        add_markers_and_panels(e)
+    },
+    error: function(e){
+        console.log("error")
+    }
+})
+
+function add_markers_and_panels(e){
+    var json = JSON.parse(e)
+    markers = []
+    for(var item in json){
+        markers.push(json[item])
+    }
+    map.addMarkers(markers)
+
+    for(i = 0; i < markers.length; i++){
+        panel = $("#panel-template").clone()
+        panel.prop("id", markers[i]["id"])
+        panel.find(".panel-heading").text(markers[i]["address"])
+        panel.find(".media-heading").text(markers[i]["incident_date"])
+        panel.find("#incident_description").text(markers[i]["incident_description"])
+        if(markers[i]["picture"]){
+            panel.find("a").prop("href", "/minsegbe/default/download/" + markers[i]["picture"])
+            panel.find(".media-object").prop("src", "/minsegbe/default/download/" + markers[i]["picture"])
+        }
+        else{
+            panel.find(".media-right").hide()
+        }
+        $("#right").append(panel.show())
+    }
+    $(".media-heading").each(function(){
+        $( this ).text(moment( $(this).text()).locale("es").format("D MMMM YYYY, h:mm"))
+    })
+}
+
+
+function detect_markers(){
+    var markers = map.markers
+    var bounds = map.getBounds()
+    for(var i = 0; i < markers.length; i++){
+    var marker = new google.maps.LatLng(markers[i].getPosition().lat(), markers[i].getPosition().lng())
+    if(!bounds.contains(marker)){
+        $("#" + markers[i]["id"]).fadeOut()
+    }
+    else{
+        $("#" + markers[i]["id"]).fadeIn()
+    }
+    }
+}
+
+map.on('zoom_changed', function(){
+detect_markers()
+})
+map.on('dragend', function(){
+detect_markers()
+})
+
+</script>
