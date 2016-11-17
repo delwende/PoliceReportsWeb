@@ -311,7 +311,7 @@ def anonymous_report():
 @service.json
 def check_update():
     data = json.loads(request.body.read())
-    version = db(db.system_version).select().first()
+    version = db(db.system_version).select(orderby=~db.system_version.version_number).first()
     if int(data["version"]) == version["version_number"]:
         return dict(status="up_to_date")
     else:
