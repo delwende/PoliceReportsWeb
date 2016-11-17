@@ -194,6 +194,9 @@ db.define_table('report_template',
     Field('text_template', 'text'),
     )
 
+db.define_table('system_version',
+    Field('version_number', 'integer'),
+    )
 
 import os
 db.wanted.picture.uploadfolder = os.path.join(request.folder, "static/wanted/")

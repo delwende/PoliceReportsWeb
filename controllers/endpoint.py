@@ -307,6 +307,16 @@ def anonymous_report():
                     )
             return dict(status="ok", anonymous_id=anonymous_id)
 
+
+@service.json
+def check_update():
+    data = json.loads(request.body.read())
+    version = db(db.system_version).select().first()
+    if int(data["version"]) == version["version_number"]:
+        return dict(status="up_to_date")
+    else:
+        return dict(status="outdated")
+
 @service.json
 def sms_websocket():
     data = json.dumps(request.body.read())
