@@ -131,7 +131,7 @@ db.define_table('anonymous_report',
     Field('perpetrator', 'string', label=T('Perpetrator')),
     Field('ip_address', 'string', default=request.client, label=T('IP Address')),
     Field('created_at', 'datetime', default=request.now),
-    Field('marker_color', 'string'),
+    Field('icon', 'string'),
     Field('anonymous_id', 'integer'),
     Field('report_type', 'string') #type can be anything, like drugs, police corruption, etc
     )

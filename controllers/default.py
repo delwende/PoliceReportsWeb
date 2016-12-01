@@ -130,8 +130,6 @@ def edit_police_report():
     db.police_reports.incident_description.writable=False
     db.police_reports.citizen_id.readable=False
     db.police_reports.citizen_id.writable=False
-    db.police_reports.report_other_citizen.readable=False
-    db.police_reports.report_other_citizen.writable=False
     db.police_reports.lat.writable=False
     db.police_reports.lat.readable=False
     db.police_reports.lng.writable=False

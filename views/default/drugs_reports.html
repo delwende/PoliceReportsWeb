@@ -60,6 +60,7 @@ function add_markers_and_panels(e){
     var json = JSON.parse(e)
     markers = []
     for(var item in json){
+        json[item]['icon'] = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + json[item]['icon']
         markers.push(json[item])
     }
     map.addMarkers(markers)

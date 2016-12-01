@@ -6,7 +6,7 @@ def call():
 
 def random_color():
     import random
-    color = "#%06x" % random.randint(0, 0xFFFFFF)
+    color = "%06x" % random.randint(0, 0xFFFFFF)
     return color
 
 
@@ -193,11 +193,11 @@ def anonymous_report():
     if request.vars.anonymous_id:
         import datetime
         last_report = db((db.anonymous_report.anonymous_id == request.vars.anonymous_id)
-            &(db.anonymous_report.created_at >= datetime.datetime.today().strftime("%Y-%m-%d 00:00:00"))).select(db.anonymous_report.marker_color,
+            &(db.anonymous_report.created_at >= datetime.datetime.today().strftime("%Y-%m-%d 00:00:00"))).select(db.anonymous_report.icon,
              db.anonymous_report.created_at)
         if len(last_report) > 2:
             if last_report[-1]['created_at'] <= datetime.datetime.now() - datetime.timedelta(minutes=30):
-                last_report = db((db.anonymous_report.anonymous_id == request.vars.anonymous_id)).select(db.anonymous_report.marker_color, limitby=(0,1)).first()
+                last_report = db((db.anonymous_report.anonymous_id == request.vars.anonymous_id)).select(db.anonymous_report.icon, limitby=(0,1)).first()
                 if hasattr(request.vars.picture, 'filename'):
                     file = open('/tmp/'+str(request.vars.picture.filename), 'wb')
                     image = request.vars.picture.file.read()
@@ -213,13 +213,13 @@ def anonymous_report():
                             address=request.vars.address,
                             perpetrator=request.vars.perpetrator,
                             anonymous_id=request.vars.anonymous_id,
-                            marker_color=last_report['marker_color'],
+                            icon=last_report['icon'],
                             report_type=request.vars.report_type
                             )
                     file.close()
                     return dict(status="ok")
                 else:
-                    last_report = db((db.anonymous_report.anonymous_id == request.vars.anonymous_id)).select(db.anonymous_report.marker_color, limitby=(0,1)).first()
+                    last_report = db((db.anonymous_report.anonymous_id == request.vars.anonymous_id)).select(db.anonymous_report.icon, limitby=(0,1)).first()
                     db.anonymous_report.insert(
                             incident_date=request.vars.incident_date,
                             incident_description=request.vars.incident_description,
@@ -228,14 +228,14 @@ def anonymous_report():
                             address=request.vars.address,
                             perpetrator=request.vars.perpetrator,
                             anonymous_id=request.vars.anonymous_id,
-                            marker_color=last_report['marker_color'],
+                            icon=last_report['icon'],
                             report_type=request.vars.report_type
                             )
                     return dict(status="ok")
             else:
                 return dict(status = "cool_down")
         else:
-            last_report = db((db.anonymous_report.anonymous_id == request.vars.anonymous_id)).select(db.anonymous_report.marker_color, limitby=(0,1)).first()
+            last_report = db((db.anonymous_report.anonymous_id == request.vars.anonymous_id)).select(db.anonymous_report.icon, limitby=(0,1)).first()
             if hasattr(request.vars.picture, 'filename'):
                 file = open('/tmp/'+str(request.vars.picture.filename), 'wb')
                 image = request.vars.picture.file.read()
@@ -251,13 +251,13 @@ def anonymous_report():
                         address=request.vars.address,
                         perpetrator=request.vars.perpetrator,
                         anonymous_id=request.vars.anonymous_id,
-                        marker_color=last_report['marker_color'],
+                        icon=last_report['icon'],
                         report_type=request.vars.report_type
                         )
                 file.close()
                 return dict(status="ok")
             else:
-                last_report = db((db.anonymous_report.anonymous_id == request.vars.anonymous_id)).select(db.anonymous_report.marker_color, limitby=(0,1)).first()
+                last_report = db((db.anonymous_report.anonymous_id == request.vars.anonymous_id)).select(db.anonymous_report.icon, limitby=(0,1)).first()
                 db.anonymous_report.insert(
                         incident_date=request.vars.incident_date,
                         incident_description=request.vars.incident_description,
@@ -266,7 +266,7 @@ def anonymous_report():
                         address=request.vars.address,
                         perpetrator=request.vars.perpetrator,
                         anonymous_id=request.vars.anonymous_id,
-                        marker_color=last_report['marker_color'],
+                        icon=last_report['icon'],
                         report_type=request.vars.report_type
                         )
                 return dict(status="ok")
@@ -288,7 +288,7 @@ def anonymous_report():
                     address=request.vars.address,
                     perpetrator=request.vars.perpetrator,
                     anonymous_id=anonymous_id,
-                    marker_color=color,
+                    icon=color,
                     report_type=request.vars.report_type
                     )
             file.close()
@@ -302,7 +302,7 @@ def anonymous_report():
                     address=request.vars.address,
                     perpetrator=request.vars.perpetrator,
                     anonymous_id=anonymous_id,
-                    marker_color=color,
+                    icon=color,
                     report_type=request.vars.report_type
                     )
             return dict(status="ok", anonymous_id=anonymous_id)
