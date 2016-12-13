@@ -1,8 +1,10 @@
 import gluon.contrib.simplejson as json
 
+
 def call():
     session.forget()
     return service()
+
 
 def random_color():
     import random
@@ -18,29 +20,29 @@ def random_id():
 
 @service.json
 def wanted():
-	r=db(db.wanted).select()
-	return dict(r=r)
+    r = db(db.wanted).select()
+    return dict(r=r)
 
 
 @service.json
 def wanted_data():
-	insert = db.wanted_data.insert(description=request.vars.description,
-		wanted_data_id=request.vars.wanted_data_id)
-	return dict(status="ok")
+    insert = db.wanted_data.insert(description=request.vars.description,
+                                   wanted_data_id=request.vars.wanted_data_id)
+    return dict(status="ok")
 
 
 @service.json
 def missing():
-	r=db(db.missing).select()
-	return dict(r=r)
+    r = db(db.missing).select()
+    return dict(r=r)
 
 
 @service.json
 def missing_data():
-	data = json.loads(request.body.read())
-	insert = db.missing_data.insert(description=data['description'],
-		missing_data_id=data['missing_data_id'])
-	return dict(status="ok")
+    data = json.loads(request.body.read())
+    insert = db.missing_data.insert(description=data['description'],
+                                    missing_data_id=data['missing_data_id'])
+    return dict(status="ok")
 
 
 def id_generator():
@@ -61,24 +63,24 @@ def register_citizen():
         return dict(status="already_registered")
     else:
         citizen = db.citizen.insert(
-                                    ssn=data['ssn'],
-                                    name=data['name'],
-                                    last_name=data['last_name'],
-                                    nationality=data['nationality'],
-                                    birth_date=data['birth_date'],
-                                    address=data['address'],
-                                    phone=data['phone'],
-                                    email=data['email'],
-                                    occupation=data['occupation'],
-                                    marital_status=data['marital_status'],
-                                    mother_name=data['mother_name'],
-                                    father_name=data['father_name']
-                                    )
+            ssn=data['ssn'],
+            name=data['name'],
+            last_name=data['last_name'],
+            nationality=data['nationality'],
+            birth_date=data['birth_date'],
+            address=data['address'],
+            phone=data['phone'],
+            email=data['email'],
+            occupation=data['occupation'],
+            marital_status=data['marital_status'],
+            mother_name=data['mother_name'],
+            father_name=data['father_name']
+        )
         verification_code = id_generator()
         db.register_codes.insert(
-                                verification_code=verification_code,
-                                citizen_id=citizen
-                                )
+            verification_code=verification_code,
+            citizen_id=citizen
+        )
         subject = 'Gracias por su registro'
         message = 'El código de verificación es: \n'
         message += str(verification_code)
@@ -92,18 +94,21 @@ def activation():
     data = json.loads(request.body.read())
     if data['ssn']:
         citizen_id = db(db.citizen.ssn == data['ssn']).select().first()
-        code = db((db.register_codes.used == False)&
-                (db.register_codes.citizen_id == citizen_id['id'])).select().last()
+        code = db((db.register_codes.used == False) &
+                  (db.register_codes.citizen_id == citizen_id['id'])).select().last()
     if code:
         if data['verification_code'] == code['verification_code']:
-            code.update_record(used=True, code_date=data['code_date'], citizen_id=citizen_id['id'])
-            citizen_id.update_record(active_user=True, citizen_id=citizen_id['id'])
+            code.update_record(used=True, code_date=data[
+                               'code_date'], citizen_id=citizen_id['id'])
+            citizen_id.update_record(
+                active_user=True, citizen_id=citizen_id['id'])
             return dict(status="activation_successful",
-                    citizen_id=citizen_id['id'])
+                        citizen_id=citizen_id['id'])
         else:
             return dict(status="activation_error")
     else:
         return dict(status="error")
+
 
 @service.json
 def login():
@@ -112,10 +117,10 @@ def login():
     if ssn:
         verification_code = id_generator()
         db.register_codes.insert(
-                                verification_code=verification_code,
-                                code_date=data['code_date'],
-                                citizen_id=ssn['id']
-                                )
+            verification_code=verification_code,
+            code_date=data['code_date'],
+            citizen_id=ssn['id']
+        )
         subject = 'Código de inicio de sesión'
         message = 'El código de inicio de sesión es: \n'
         message += str(verification_code)
@@ -129,23 +134,24 @@ def login():
 @service.json
 def police_report():
     if hasattr(request.vars.picture, 'filename'):
-        file = open('/tmp/'+str(request.vars.picture.filename), 'wb')
+        file = open('/tmp/' + str(request.vars.picture.filename), 'wb')
         image = request.vars.picture.file.read()
         file.write(image)
         file.close()
-        file = open('/tmp/'+str(request.vars.picture.filename), 'rb')
+        file = open('/tmp/' + str(request.vars.picture.filename), 'rb')
         citizen_id = db(db.citizen.ssn == request.vars.ssn).select().first()
         if citizen_id:
             db.police_reports.insert(
-                    citizen_id=citizen_id,
-                    incident_date=request.vars.incident_date,
-                    incident_description=request.vars.incident_description,
-                    picture=db.police_reports.picture.store(file, request.vars.picture.filename),
-                    lat=request.vars.lat,
-                    lng=request.vars.lng,
-                    address=request.vars.address,
-                    perpetrator=request.vars.perpetrator
-                    )
+                citizen_id=citizen_id,
+                incident_date=request.vars.incident_date,
+                incident_description=request.vars.incident_description,
+                picture=db.police_reports.picture.store(
+                    file, request.vars.picture.filename),
+                lat=request.vars.lat,
+                lng=request.vars.lng,
+                address=request.vars.address,
+                perpetrator=request.vars.perpetrator
+            )
             file.close()
             return dict(status="ok")
         else:
@@ -154,14 +160,14 @@ def police_report():
         citizen_id = db(db.citizen.ssn == request.vars.ssn).select().first()
         if citizen_id:
             db.police_reports.insert(
-                    citizen_id=citizen_id,
-                    incident_date=request.vars.incident_date,
-                    incident_description=request.vars.incident_description,
-                    lat=request.vars.lat,
-                    lng=request.vars.lng,
-                    address=request.vars.address,
-                    perpetrator=request.vars.perpetrator
-                    )
+                citizen_id=citizen_id,
+                incident_date=request.vars.incident_date,
+                incident_description=request.vars.incident_description,
+                lat=request.vars.lat,
+                lng=request.vars.lng,
+                address=request.vars.address,
+                perpetrator=request.vars.perpetrator
+            )
             return dict(status="ok")
         else:
             return dict(status="error")
@@ -169,45 +175,52 @@ def police_report():
 
 @service.json
 def drugs_reports():
-    markers = db(db.anonymous_report.report_type=='drugs').select()
+    markers = db(db.anonymous_report.report_type == 'drugs').select()
     return markers.as_json()
+
 
 @service.json
 def suspect_aircraft():
-    markers = db(db.anonymous_report.report_type=='suspect_aircraft').select()
+    markers = db(db.anonymous_report.report_type ==
+                 'suspect_aircraft').select()
     return markers.as_json()
-
 
 
 @service.json
 def police_stations():
     police_stations = db(db.jurisdiction.id == db.police_station.jurisdiction_id).select(db.police_station.name,
-            db.police_station.lat,
-            db.police_station.lng,
-            db.police_station.id,
-            db.police_station.jurisdiction_id)
+                                                                                         db.police_station.lat,
+                                                                                         db.police_station.lng,
+                                                                                         db.police_station.id,
+                                                                                         db.police_station.jurisdiction_id)
     return dict(police_stations=police_stations)
+
 
 @service.json
 def anonymous_report():
     if request.vars.anonymous_id:
         import datetime
         last_report = db((db.anonymous_report.anonymous_id == request.vars.anonymous_id)
-            &(db.anonymous_report.created_at >= datetime.datetime.today().strftime("%Y-%m-%d 00:00:00"))).select(db.anonymous_report.icon,
-             db.anonymous_report.created_at)
-        if len(last_report) > 2:
-            if last_report[-1]['created_at'] <= datetime.datetime.now() - datetime.timedelta(minutes=30):
-                last_report = db((db.anonymous_report.anonymous_id == request.vars.anonymous_id)).select(db.anonymous_report.icon, limitby=(0,1)).first()
-                if hasattr(request.vars.picture, 'filename'):
-                    file = open('/tmp/'+str(request.vars.picture.filename), 'wb')
-                    image = request.vars.picture.file.read()
-                    file.write(image)
-                    file.close()
-                    file = open('/tmp/'+str(request.vars.picture.filename), 'rb')
-                    db.anonymous_report.insert(
+                         & (db.anonymous_report.created_at >= datetime.datetime.today().strftime("%Y-%m-%d 00:00:00"))).select(db.anonymous_report.icon,
+                                                                                                                               db.anonymous_report.created_at)
+        if last_report is not None:
+            if len(last_report) > 2:
+                if last_report[-1]['created_at'] <= datetime.datetime.now() - datetime.timedelta(minutes=30):
+                    last_report = db((db.anonymous_report.anonymous_id == request.vars.anonymous_id)).select(
+                        db.anonymous_report.icon, limitby=(0, 1)).first()
+                    if hasattr(request.vars.picture, 'filename'):
+                        file = open(
+                            '/tmp/' + str(request.vars.picture.filename), 'wb')
+                        image = request.vars.picture.file.read()
+                        file.write(image)
+                        file.close()
+                        file = open(
+                            '/tmp/' + str(request.vars.picture.filename), 'rb')
+                        db.anonymous_report.insert(
                             incident_date=request.vars.incident_date,
                             incident_description=request.vars.incident_description,
-                            picture=db.police_reports.picture.store(file, request.vars.picture.filename),
+                            picture=db.police_reports.picture.store(
+                                file, request.vars.picture.filename),
                             lat=request.vars.lat,
                             lng=request.vars.lng,
                             address=request.vars.address,
@@ -215,12 +228,57 @@ def anonymous_report():
                             anonymous_id=request.vars.anonymous_id,
                             icon=last_report['icon'],
                             report_type=request.vars.report_type
-                            )
-                    file.close()
-                    return dict(status="ok")
+                        )
+                        file.close()
+                        return dict(status="ok")
+                    else:
+                        last_report = db((db.anonymous_report.anonymous_id == request.vars.anonymous_id)).select(
+                            db.anonymous_report.icon, limitby=(0, 1)).first()
+                        db.anonymous_report.insert(
+                            incident_date=request.vars.incident_date,
+                            incident_description=request.vars.incident_description,
+                            lat=request.vars.lat,
+                            lng=request.vars.lng,
+                            address=request.vars.address,
+                            perpetrator=request.vars.perpetrator,
+                            anonymous_id=request.vars.anonymous_id,
+                            icon=last_report['icon'],
+                            report_type=request.vars.report_type
+                        )
+                        return dict(status="ok")
                 else:
-                    last_report = db((db.anonymous_report.anonymous_id == request.vars.anonymous_id)).select(db.anonymous_report.icon, limitby=(0,1)).first()
-                    db.anonymous_report.insert(
+                    return dict(status="cool_down")
+            else:
+                last_report = db((db.anonymous_report.anonymous_id == request.vars.anonymous_id)).select(
+                    db.anonymous_report.icon, limitby=(0, 1)).first()
+                if last_report is not None:
+                    if hasattr(request.vars.picture, 'filename'):
+                        file = open(
+                            '/tmp/' + str(request.vars.picture.filename), 'wb')
+                        image = request.vars.picture.file.read()
+                        file.write(image)
+                        file.close()
+                        file = open(
+                            '/tmp/' + str(request.vars.picture.filename), 'rb')
+                        db.anonymous_report.insert(
+                            incident_date=request.vars.incident_date,
+                            incident_description=request.vars.incident_description,
+                            picture=db.police_reports.picture.store(
+                                file, request.vars.picture.filename),
+                            lat=request.vars.lat,
+                            lng=request.vars.lng,
+                            address=request.vars.address,
+                            perpetrator=request.vars.perpetrator,
+                            anonymous_id=request.vars.anonymous_id,
+                            icon=last_report['icon'],
+                            report_type=request.vars.report_type
+                        )
+                        file.close()
+                        return dict(status="ok")
+                    else:
+                        last_report = db((db.anonymous_report.anonymous_id == request.vars.anonymous_id)).select(
+                            db.anonymous_report.icon, limitby=(0, 1)).first()
+                        db.anonymous_report.insert(
                             incident_date=request.vars.incident_date,
                             incident_description=request.vars.incident_description,
                             lat=request.vars.lat,
@@ -230,92 +288,61 @@ def anonymous_report():
                             anonymous_id=request.vars.anonymous_id,
                             icon=last_report['icon'],
                             report_type=request.vars.report_type
-                            )
-                    return dict(status="ok")
-            else:
-                return dict(status = "cool_down")
+                        )
+                        return dict(status="ok")
+                else:
+                    return dict(status="error")
         else:
-            last_report = db((db.anonymous_report.anonymous_id == request.vars.anonymous_id)).select(db.anonymous_report.icon, limitby=(0,1)).first()
-            if hasattr(request.vars.picture, 'filename'):
-                file = open('/tmp/'+str(request.vars.picture.filename), 'wb')
-                image = request.vars.picture.file.read()
-                file.write(image)
-                file.close()
-                file = open('/tmp/'+str(request.vars.picture.filename), 'rb')
-                db.anonymous_report.insert(
-                        incident_date=request.vars.incident_date,
-                        incident_description=request.vars.incident_description,
-                        picture=db.police_reports.picture.store(file, request.vars.picture.filename),
-                        lat=request.vars.lat,
-                        lng=request.vars.lng,
-                        address=request.vars.address,
-                        perpetrator=request.vars.perpetrator,
-                        anonymous_id=request.vars.anonymous_id,
-                        icon=last_report['icon'],
-                        report_type=request.vars.report_type
-                        )
-                file.close()
-                return dict(status="ok")
-            else:
-                last_report = db((db.anonymous_report.anonymous_id == request.vars.anonymous_id)).select(db.anonymous_report.icon, limitby=(0,1)).first()
-                db.anonymous_report.insert(
-                        incident_date=request.vars.incident_date,
-                        incident_description=request.vars.incident_description,
-                        lat=request.vars.lat,
-                        lng=request.vars.lng,
-                        address=request.vars.address,
-                        perpetrator=request.vars.perpetrator,
-                        anonymous_id=request.vars.anonymous_id,
-                        icon=last_report['icon'],
-                        report_type=request.vars.report_type
-                        )
-                return dict(status="ok")
+            return dict(status="error")
     else:
         color = random_color()
         anonymous_id = random_id()
         if hasattr(request.vars.picture, 'filename'):
-            file = open('/tmp/'+str(request.vars.picture.filename), 'wb')
+            file = open('/tmp/' + str(request.vars.picture.filename), 'wb')
             image = request.vars.picture.file.read()
             file.write(image)
             file.close()
-            file = open('/tmp/'+str(request.vars.picture.filename), 'rb')
+            file = open('/tmp/' + str(request.vars.picture.filename), 'rb')
             db.anonymous_report.insert(
-                    incident_date=request.vars.incident_date,
-                    incident_description=request.vars.incident_description,
-                    picture=db.police_reports.picture.store(file, request.vars.picture.filename),
-                    lat=request.vars.lat,
-                    lng=request.vars.lng,
-                    address=request.vars.address,
-                    perpetrator=request.vars.perpetrator,
-                    anonymous_id=anonymous_id,
-                    icon=color,
-                    report_type=request.vars.report_type
-                    )
+                incident_date=request.vars.incident_date,
+                incident_description=request.vars.incident_description,
+                picture=db.police_reports.picture.store(
+                    file, request.vars.picture.filename),
+                lat=request.vars.lat,
+                lng=request.vars.lng,
+                address=request.vars.address,
+                perpetrator=request.vars.perpetrator,
+                anonymous_id=anonymous_id,
+                icon=color,
+                report_type=request.vars.report_type
+            )
             file.close()
             return dict(status="ok", anonymous_id=anonymous_id)
         else:
             db.anonymous_report.insert(
-                    incident_date=request.vars.incident_date,
-                    incident_description=request.vars.incident_description,
-                    lat=request.vars.lat,
-                    lng=request.vars.lng,
-                    address=request.vars.address,
-                    perpetrator=request.vars.perpetrator,
-                    anonymous_id=anonymous_id,
-                    icon=color,
-                    report_type=request.vars.report_type
-                    )
+                incident_date=request.vars.incident_date,
+                incident_description=request.vars.incident_description,
+                lat=request.vars.lat,
+                lng=request.vars.lng,
+                address=request.vars.address,
+                perpetrator=request.vars.perpetrator,
+                anonymous_id=anonymous_id,
+                icon=color,
+                report_type=request.vars.report_type
+            )
             return dict(status="ok", anonymous_id=anonymous_id)
 
 
 @service.json
 def check_update():
     data = json.loads(request.body.read())
-    version = db(db.system_version).select(orderby=~db.system_version.version_number).first()
+    version = db(db.system_version).select(
+        orderby=~db.system_version.version_number).first()
     if int(data["version"]) == version["version_number"]:
         return dict(status="up_to_date")
     else:
         return dict(status="outdated")
+
 
 @service.json
 def sms_websocket():
