@@ -3,106 +3,154 @@
 <script src="{{=URL('static','js/gmaps.min.js')}}"></script>
 <script src="{{=URL('static','js/moment.min.js')}}"></script>
 <script src="{{=URL('static','js/moment-with-locales.min.js')}}"></script>
+<script src="//code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+<link rel="stylesheet" href="{{=URL('static','css/custom.css')}}" />
 <div class="row">
-  <div class="col-md-8">
-    <div id="map" style="height:600px;width:100%;"></div>
-  </div>
-  <div class="col-md-4" id="right">
-</div>
-
-
-
-<div class="panel panel-info" id="panel-template">
-  <!-- Default panel contents -->
-    <div class="panel-heading">Address</div>
-    <div class="panel-body">
-    <div class="media">
-    <div class="media-body">
-        <h4 class="media-heading">Date</h4>
-        <p id="incident_description">Description</p>
+    <div class="col-md-8">
+        <div id="map"></div>
     </div>
-    <div class="media-right">
-        <a href="#">
-            <img class="media-object img-thumbnail" src="" width="140px"
-            height="140px">
-        </a>
+    <div class="col-md-4" id="right">
     </div>
+
+
+
+    <div class="panel panel-info" id="panel-template">
+        <!-- Default panel contents -->
+        <div class="panel-heading">Address</div>
+        <div class="panel-body">
+            <div class="media">
+                <div class="media-body">
+                    <h4 class="media-heading">Date</h4>
+                    <p id="incident_description">Description</p>
+                </div>
+                <div class="media-right">
+                    <a href="#">
+                        <img class="media-object img-thumbnail" src="" width="140px" height="140px">
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
-    </div>
-</div>
 
-<script>
-$(document).ready(function(){
-    $("#panel-template").hide()
-})
-var map = new GMaps({
-    div: '#map',
-    lat: -26.8093,
-    lng: -65.2202,
-    zoom: 12,
-})
+    <script>
+        $(document).ready(function() {
+            $("#panel-template").hide()
+        })
+        var map = new GMaps({
+            div: '#map',
+            lat: -26.8093,
+            lng: -65.2202,
+            zoom: 12,
+        })
 
-$.ajax({
-    type:'GET',
-    url: '/minsegbe/endpoint/call/json/suspect_aircraft',
-    contentType: "application/json; charset=utf-8;",
-    dataType:'json',
-    success: function(e){
-        add_markers_and_panels(e)
-    },
-    error: function(e){
-        console.log("error")
-    }
-})
+        $.ajax({
+            type: 'GET',
+            url: '/minsegbe/endpoint/call/json/suspect_aircraft',
+            contentType: "application/json; charset=utf-8;",
+            dataType: 'json',
+            success: function(e) {
+                add_markers_and_panels(e)
+            },
+            error: function(e) {
+                console.log("error")
+            }
+        })
 
-function add_markers_and_panels(e){
-    var json = JSON.parse(e)
-    markers = []
-    for(var item in json){
-        markers.push(json[item])
-    }
-    map.addMarkers(markers)
+        function add_markers_and_panels(e) {
+            var json = JSON.parse(e)
+            markers = []
+            for (var item in json) {
+                marker = json[item]
+                marker['infoWindow'] = {
+                    "content": "!"
+                }
+                marker['icon'] = "https://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + json[item]['icon']
+                    //highlight and scroll to panel when hovering on a marker
+                google.maps.event.addListener(marker, 'mouseover', function() {
+                    // TODO: Fix scrolling behavior bug
+                    //  if(!($("#"+marker["id"]).isOnScreen())) {
+                    $('#right').animate({
+                        scrollTop: $("#" + marker["id"]).offset().top
+                    }, 1000)
+                    $("#" + marker["id"]).effect("highlight", {}, 4000);
+                    // }
+                })
+                markers.push(json[item])
+            }
+            map.addMarkers(markers)
 
-    for(i = 0; i < markers.length; i++){
-        panel = $("#panel-template").clone()
-        panel.prop("id", markers[i]["id"])
-        panel.find(".panel-heading").text(markers[i]["address"])
-        panel.find(".media-heading").text(markers[i]["incident_date"])
-        panel.find("#incident_description").text(markers[i]["incident_description"])
-        if(markers[i]["picture"]){
-            panel.find("a").prop("href", "/minsegbe/default/download/" + markers[i]["picture"])
-            panel.find(".media-object").prop("src", "/minsegbe/default/download/" + markers[i]["picture"])
+            for (i = 0; i < markers.length; i++) {
+                panel = $("#panel-template").clone()
+                panel.prop("id", markers[i]["id"])
+                panel.find(".panel-heading").text(markers[i]["address"])
+                panel.find(".media-heading").text(markers[i]["incident_date"])
+                panel.find("#incident_description").text(markers[i]["incident_description"])
+                if (markers[i]["picture"]) {
+                    panel.find("a").prop("href", "/minsegbe/default/download/" + markers[i]["picture"])
+                    panel.find(".media-object").prop("src", "/minsegbe/default/download/" + markers[i]["picture"])
+                } else {
+                    panel.find(".media-right").hide()
+                }
+                $("#right").append(panel.show())
+            }
+            $(".media-heading").each(function() {
+                    $(this).text(moment($(this).text()).locale("es").format("D MMMM YYYY, h:mm"))
+                })
+                //highlight marker when clicking on a panel
+            $(".panel, .panel-info").on('click', function() {
+                $(".panel, .panel-info").removeClass("glow")
+                $(this).toggleClass("glow")
+                marker_id = $(this).prop("id")
+                for (var i = 0; i < map.markers.length; i++) {
+                    map.markers[i].setAnimation(null);
+                    if (map.markers[i]["id"] == marker_id) {
+                        map.hideInfoWindows()
+                        marker = map.markers[i]
+                            // google.maps.event.trigger(marker,'click')
+                        marker.setAnimation(google.maps.Animation.DROP);
+                    }
+                }
+            })
         }
-        else{
-            panel.find(".media-right").hide()
+
+
+        function detect_markers() {
+            var markers = map.markers
+            var bounds = map.getBounds()
+            for (var i = 0; i < markers.length; i++) {
+                var marker = new google.maps.LatLng(markers[i].getPosition().lat(), markers[i].getPosition().lng())
+                if (!bounds.contains(marker)) {
+                    $("#" + markers[i]["id"]).fadeOut()
+                } else {
+                    $("#" + markers[i]["id"]).fadeIn()
+                }
+            }
         }
-        $("#right").append(panel.show())
-    }
-    $(".media-heading").each(function(){
-        $( this ).text(moment( $(this).text()).locale("es").format("D MMMM YYYY, h:mm"))
-    })
-}
+
+        map.on('zoom_changed', function() {
+            detect_markers()
+        })
+        map.on('dragend', function() {
+            detect_markers()
+        })
 
 
-function detect_markers(){
-    var markers = map.markers
-    var bounds = map.getBounds()
-    for(var i = 0; i < markers.length; i++){
-    var marker = new google.maps.LatLng(markers[i].getPosition().lat(), markers[i].getPosition().lng())
-    if(!bounds.contains(marker)){
-        $("#" + markers[i]["id"]).fadeOut()
-    }
-    else{
-        $("#" + markers[i]["id"]).fadeIn()
-    }
-    }
-}
+        $.fn.isOnScreen = function() {
 
-map.on('zoom_changed', function(){
-detect_markers()
-})
-map.on('dragend', function(){
-detect_markers()
-})
+            var win = $(window);
 
-</script>
+            var viewport = {
+                top: win.scrollTop(),
+                left: win.scrollLeft()
+            };
+            viewport.right = viewport.left + win.width();
+            viewport.bottom = viewport.top + win.height();
+
+            var bounds = this.offset();
+            bounds.right = bounds.left + this.outerWidth();
+            bounds.bottom = bounds.top + this.outerHeight();
+
+            return (!(viewport.right < bounds.left || viewport.left > bounds.right || viewport.bottom < bounds.top || viewport.top > bounds.bottom));
+
+        };
+    </script>
