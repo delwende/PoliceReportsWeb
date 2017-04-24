@@ -26,6 +26,7 @@ response.menu = [
     (T('Citizens'), False, URL('default', 'index'), []),
     (T('Police Reports'), False, URL('default', 'police_reports'), []),
     (T('Corruption Reports'), False, URL('default', 'corruption_reports'), []),
+    (T('Other Reports'), False, URL('default', 'other_reports'), []),
     (T('Drugs Reports'), False, URL('default', 'drugs_reports'), []),
     (T('Suspect Aircraft'), False, URL('default', 'suspect_aircraft'), []),
     (T('Wanted'), False, URL('default', 'add_wanted'), []),

@@ -162,6 +162,11 @@ def suspect_aircraft():
 
 
 @auth.requires_login()
+def other_reports():
+    return dict()
+
+
+@auth.requires_login()
 def generate_report():
     report = db(db.police_reports.id==request.args(0)).select().first()
     citizen_id = report['citizen_id']

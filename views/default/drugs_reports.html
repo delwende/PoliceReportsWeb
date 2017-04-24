@@ -42,10 +42,10 @@
             lng: -65.2202,
             zoom: 12,
         })
-
+        app = document.location.origin + "/" + document.location.pathname.split("/")[1]  //getting the app path
         $.ajax({
             type: 'GET',
-            url: '/minsegbe/endpoint/call/json/drugs_reports',
+            url: app + '/endpoint/call/json/drugs_reports',
             contentType: "application/json; charset=utf-8;",
             dataType: 'json',
             success: function(e) {
@@ -86,8 +86,8 @@
                 panel.find(".media-heading").text(markers[i]["incident_date"])
                 panel.find("#incident_description").text(markers[i]["incident_description"])
                 if (markers[i]["picture"]) {
-                    panel.find("a").prop("href", "/minsegbe/default/download/" + markers[i]["picture"])
-                    panel.find(".media-object").prop("src", "/minsegbe/default/download/" + markers[i]["picture"])
+                    panel.find("a").prop("href", app + "/default/download/" + markers[i]["picture"])
+                    panel.find(".media-object").prop("src", app + "/default/download/" + markers[i]["picture"])
                 } else {
                     panel.find(".media-right").hide()
                 }

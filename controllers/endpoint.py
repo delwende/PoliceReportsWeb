@@ -180,6 +180,12 @@ def drugs_reports():
 
 
 @service.json
+def other_reports():
+    markers = db(db.anonymous_report.report_type == 'other').select()
+    return markers.as_json()
+
+
+@service.json
 def suspect_aircraft():
     markers = db(db.anonymous_report.report_type ==
                  'suspect_aircraft').select()

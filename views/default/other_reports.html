@@ -45,7 +45,7 @@
         app = document.location.origin + "/" + document.location.pathname.split("/")[1]  //getting the app path
         $.ajax({
             type: 'GET',
-            url: app + '/endpoint/call/json/suspect_aircraft',
+            url: app + '/endpoint/call/json/other_reports',
             contentType: "application/json; charset=utf-8;",
             dataType: 'json',
             success: function(e) {
@@ -86,7 +86,7 @@
                 panel.find(".media-heading").text(markers[i]["incident_date"])
                 panel.find("#incident_description").text(markers[i]["incident_description"])
                 if (markers[i]["picture"]) {
-                    panel.find("a").prop("href", app + "/default/download/" + markers[i]["picture"])
+                    panel.find("a").prop("href", app +"/default/download/" + markers[i]["picture"])
                     panel.find(".media-object").prop("src", app + "/default/download/" + markers[i]["picture"])
                 } else {
                     panel.find(".media-right").hide()
