@@ -147,7 +147,6 @@ db.define_table('report_codes',
 db.define_table('wanted',
     Field('name', 'string', label=T('Name')),
     Field('last_name', 'string', label=T('Last Name')),
-    Field('last_time_seen', 'date', label=T('Last Time Seen')),
     Field('picture', 'upload', label=T('Picture')),
     Field('crime', 'string', label=T('Crime')),
     Field('captured', 'boolean', default=False, label=T('Captured')),
@@ -157,7 +156,6 @@ db.define_table('wanted',
 db.define_table('missing',
     Field('name', 'string', label=T('Name')),
     Field('last_name', 'string', label=T('Last Name')),
-    Field('last_time_seen', 'date', label=T('Last Time Seen')),
     Field('picture', 'upload', label=T('Picture')),
     Field('missing_found', 'boolean', default=False, label=T('Captured')),
     Field('age', 'integer', label=T('Age'))
@@ -166,15 +164,15 @@ db.define_table('missing',
 db.define_table('wanted_data',
     Field('wanted_data_id', db.wanted),
     Field('description', 'string'),
-    Field('ip_address', 'string', label=T('IP Address')),
-    Field('created_at', 'datetime')
+    Field('ip_address', 'string', label=T('IP Address'), default=request.env.remote_addr),
+    Field('created_at', 'datetime', default=request.now)
     )
 
 db.define_table('missing_data',
     Field('missing_data_id', db.missing),
     Field('description', 'string'),
-    Field('ip_address', 'string', label=T('IP Address')),
-    Field('created_at', 'datetime')
+    Field('ip_address', 'string', label=T('IP Address'), default=request.env.remote_addr),
+    Field('created_at', 'datetime', default=request.now)
     )
 
 

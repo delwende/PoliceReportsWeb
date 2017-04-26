@@ -42,33 +42,49 @@ def view_citizen_profile():
 
 @auth.requires_login()
 def add_wanted():
-    db.wanted.id.readable=False
-    db.wanted.picture.readable=False
-    links = [dict(header = T("Picture"),body = lambda row: A(IMG(_src =
-                    URL('default', 'download', args = row.picture),
-                    _width = 100, _height = 100, _class="img-rounded"),
-                _href = URL('default', 'download', args = row.picture))
-    )]
-    form = SQLFORM.smartgrid(db.wanted,
-        csv=auth.has_membership("admin"),
-        field_id=False,
-        links=links)
-    return dict(form=form)
+    if 'wanted_data.wanted_data_id' in request.args:
+        db.wanted.id.readable=False
+        db.wanted.picture.readable=False
+        form = SQLFORM.smartgrid(db.wanted,
+            csv=auth.has_membership("admin"),
+            field_id=False)
+        return dict(form=form)
+    else:
+        db.wanted.id.readable=False
+        db.wanted.picture.readable=False
+        links = [dict(header = T("Picture"),body = lambda row: A(IMG(_src =
+                        URL('default', 'download', args = row.picture),
+                        _width = 100, _height = 100, _class="img-rounded"),
+                    _href = URL('default', 'download', args = row.picture))
+        )]
+        form = SQLFORM.smartgrid(db.wanted,
+            csv=auth.has_membership("admin"),
+            field_id=False,
+            links=links)
+        return dict(form=form)
 
 @auth.requires_login()
 def add_missing():
-    db.missing.picture.readable=False
-    links = [dict(header = T("Picture"),body = lambda row: A(IMG(_src =
-                    URL('default', 'download', args = row.picture),
-                    _width = 100, _height = 100, _class="img-rounded"),
-                _href = URL('default', 'download', args = row.picture))
-    )]
-    db.missing.id.readable=False
-    form = SQLFORM.smartgrid(db.missing,
-        csv=auth.has_membership("admin"),
-        field_id=False,
-        links=links)
-    return dict(form=form)
+    if 'missing_data.missing_data_id' in request.args:
+        db.missing.picture.readable=False
+        db.missing.id.readable=False
+        form = SQLFORM.smartgrid(db.missing,
+            csv=auth.has_membership("admin"),
+            field_id=False)
+        return dict(form=form)
+    else:
+        db.missing.picture.readable=False
+        links = [dict(header = T("Picture"),body = lambda row: A(IMG(_src =
+                        URL('default', 'download', args = row.picture),
+                        _width = 100, _height = 100, _class="img-rounded"),
+                    _href = URL('default', 'download', args = row.picture))
+        )]
+        db.missing.id.readable=False
+        form = SQLFORM.smartgrid(db.missing,
+            csv=auth.has_membership("admin"),
+            field_id=False,
+            links=links)
+        return dict(form=form)
 
 
 @auth.requires_login()
